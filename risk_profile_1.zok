@@ -1,0 +1,61 @@
+def average(u32[3] values) -> u32 {
+    u32 mut sum = 0;
+    for u32 i in 0..3{
+        sum = sum + values[i];
+    }
+    return sum / 3;
+}
+
+def newton_raphson(u32 x, u32 mut z) -> u32 {
+    for u32 i in 0..10 {
+        z = (z + (x / z)) / 2;
+    }
+    return z;
+}
+
+def sqrt(u32 x) -> u32 {
+    u32 mut z = x;
+    return if (x == 0) { 0 } else { newton_raphson(x, z) };
+}
+
+def variance(u32[3] values) -> u32{
+    u32 mut sum = 0;
+    u32 averageValue = average(values);
+    for u32 i in 0..3{
+        u32 diff = values[i] - averageValue;
+        sum = sum + diff * diff;
+    }
+    return sum / 3;
+}
+
+def main(
+    private u32 employmentType, 
+    private u32 sector, 
+    private u32 birthYear, 
+    private u32[3] netTotal, 
+    private u32[3] assignableFifth,
+    public u32 currentYear) -> bool {
+	
+    u32 age = currentYear - birthYear;
+    u32 netTotalVariance = variance(netTotal);
+    u32 standardDeviationNetTotal = sqrt(netTotalVariance);
+    u32 limit = 500;
+
+    assert( employmentType == 0 );
+    assert( sector == 0 );
+    assert( age < 60 );
+    assert( standardDeviationNetTotal < limit );
+
+    u32 constraint = 800;
+    u32 weightAge = 30;
+    u32 weightNetTotal = 40;
+    u32 weightAssignableFifth = 30;
+
+    u32 mut sum = weightNetTotal * average(netTotal) +
+        weightAssignableFifth * average(assignableFifth) - 
+        weightAge * age;
+
+    sum = sum / 100;
+
+    return if sum >= constraint { true } else { false };
+}
